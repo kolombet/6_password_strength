@@ -5,8 +5,11 @@ import sys
 
 def get_password_strength(password):
     strength = 0
-    if is_in_black_list(password):
+
+    url = get_black_list_url()
+    if url and is_in_black_list(url, password):
         return 0
+
     if is_safe_length(password):
         strength += 5
     if has_numbers(password):
@@ -44,10 +47,7 @@ def get_black_list(black_list_url):
     return arr
 
 
-def is_in_black_list(password):
-    url = get_black_list_url()
-    if not url:
-        return False
+def is_in_black_list(url, password):
     black_list = get_black_list(url)
     for bad_password in black_list:
         if password == bad_password:
