@@ -1,13 +1,13 @@
-import urllib.request
+from urllib import request
 import argparse
 import sys
+import getpass
 
 
-def get_password_strength(password):
+def get_password_strength(password, black_list_url):
     strength = 0
 
-    url = get_black_list_url()
-    if url and is_in_black_list(url, password):
+    if black_list_url and is_in_black_list(black_list_url, password):
         return 0
 
     if is_safe_length(password):
@@ -41,10 +41,10 @@ def has_special_characters(password):
     return False
 
 
-def get_black_list(black_list_url):
-    txt = urllib.request.urlopen(black_list_url).read().decode("utf-8")
-    arr = txt.strip().splitlines()
-    return arr
+def get_black_list(blacklist_url):
+    stream = request.urlopen(blacklist_url)
+    blacklist_content = stream.read().decode("utf-8")
+    return blacklist_content.strip().splitlines()
 
 
 def is_in_black_list(url, password):
@@ -66,25 +66,20 @@ def get_args():
     parser.add_argument(
         "-b",
         "--blacklist",
-        dest="blacklist",
-        help="list of forbidden passwords"
+        dest="blacklist_url",
+        help="link to list of forbidden passwords"
     )
     return parser.parse_args()
 
 
 def get_password():
-    args = get_args()
-    password = args.password
-    if password is None:
-        password = input("input password to check: ")
-        if not password.strip():
-            return None
+    password = getpass.getpass("input password to check:")
+    if not password.strip():
+        return None
     return password
 
 
-def get_black_list_url():
-    args = get_args()
-    blacklist = args.blacklist
+def get_black_list_url(blacklist):
     if blacklist is None:
         blacklist = input("input blacklist file url: ")
         if not password.strip():
@@ -93,8 +88,14 @@ def get_black_list_url():
 
 
 if __name__ == "__main__":
-    password = get_password()
+    args = get_args()
+
+    password = args.password
+    if password is None:
+        password = get_password()
     if password is None:
         sys.exit("password expected")
-    password_strength = get_password_strength(password)
+
+    blacklist_url = args.blacklist_url
+    password_strength = get_password_strength(password, args.blacklist_url)
     print("password strength: {0}".format(str(password_strength)))
