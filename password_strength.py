@@ -6,23 +6,29 @@ import getpass
 
 def get_password_strength(password, black_list_url):
     strength = 0
+    in_black_list_score = 0
+    length_score = 5
+    numbers_score = 2
+    both_cases_score = 2
+    special_characters_score = 1
 
     if black_list_url and is_in_black_list(black_list_url, password):
-        return 0
+        return in_black_list_score
 
     if is_safe_length(password):
-        strength += 5
+        strength += length_score
     if has_numbers(password):
-        strength += 2
+        strength += numbers_score
     if has_lower_and_upper_case(password):
-        strength += 2
+        strength += both_cases_score
     if has_special_characters(password):
-        strength += 1
+        strength += special_characters_score
     return strength
 
 
 def is_safe_length(password):
-    return len(password) > 12
+    wiki_password_length_recommendation = 12
+    return len(password) > wiki_password_length_recommendation
 
 
 def has_lower_and_upper_case(password):

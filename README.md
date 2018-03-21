@@ -14,7 +14,7 @@ You can use compromised passwords lists from [danielmiessler / SecLists](https:/
 
 For example:
 ```
-https://raw.githubusercontent.com/danielmiessler/SecLists/master/Passwords/10_million_password_list_top_1000.txt
+https://raw.githubusercontent.com/danielmiessler/SecLists/master/Passwords/Common-Credentials/10-million-password-list-top-10000.txt
 ```
 
 # Quickstart
@@ -25,11 +25,10 @@ You specify password with parameter -p or --password and you can specify blackli
 
 Example of script launch on Linux, Python 3.5:
 
-```$ python3 password_strength.py 
-input password to check: Abracadabra1234
-input blacklist file url: https://raw.githubusercontent.com/danielmiessler/SecLists/master/Passwords/10_million_password_list_top_1000.txt
-password strength: 9
-
+```
+$ python3 password_strength.py -b https://raw.githubusercontent.com/danielmiessler/SecLists/master/Passwords/Common-Credentials/10-million-password-list-top-10000.txt
+input password to check:
+password strength: 0
 
 ```
 
