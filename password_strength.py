@@ -6,7 +6,6 @@ import string
 
 
 def get_password_strength(password, blacklist):
-    strength = 0
     in_blacklist_score = 0
     length_score = 5
     numbers_score = 2
@@ -15,16 +14,12 @@ def get_password_strength(password, blacklist):
 
     if blacklist and is_in_blacklist(blacklist, password):
         return in_blacklist_score
-
-    if is_safe_length(password):
-        strength += length_score
-    if has_numbers(password):
-        strength += numbers_score
-    if has_lower_and_upper_case(password):
-        strength += both_cases_score
-    if has_special_characters(password):
-        strength += special_characters_score
-    return strength
+    return sum([
+        is_safe_length(password)*length_score,
+        has_numbers(password)*numbers_score,
+        has_lower_and_upper_case(password)*both_cases_score,
+        has_special_characters(password)*special_characters_score
+    ])
 
 
 def is_safe_length(password):
@@ -48,8 +43,11 @@ def has_special_characters(password):
 
 
 def get_blacklist(blacklist_url):
-    stream = request.urlopen(blacklist_url)
-    blacklist_content = stream.read().decode("utf-8")
+    try:
+        stream = request.urlopen(blacklist_url)
+        blacklist_content = stream.read().decode("utf-8")
+    except ValueError:
+        return None
     return blacklist_content.strip().splitlines()
 
 
@@ -59,12 +57,6 @@ def is_in_blacklist(blacklist, password):
 
 def get_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "-p",
-        "--password",
-        dest="password",
-        help="password to check"
-    )
     parser.add_argument(
         "-b",
         "--blacklist",
@@ -76,30 +68,23 @@ def get_args():
 
 def get_password():
     password = getpass.getpass("input password to check:")
-    if not password.strip():
+    if password.isspace():
         return None
     return password
-
-
-def get_blacklist_url(blacklist):
-    if blacklist is None:
-        blacklist = input("input blacklist file url: ")
-        if not password.strip():
-            return None
-    return blacklist
 
 
 if __name__ == "__main__":
     args = get_args()
 
-    password = args.password
-    if password is None:
-        password = get_password()
+    password = get_password()
     if password is None:
         sys.exit("password expected")
 
     blacklist_url = args.blacklist_url
-    if (blacklist_url):
+    blacklist = None
+    if blacklist_url:
         blacklist = get_blacklist(blacklist_url)
+        if not blacklist:
+            sys.exit("bad blacklist url specified")
     password_strength = get_password_strength(password, blacklist)
     print("password strength: {0}".format(str(password_strength)))
