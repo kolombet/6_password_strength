@@ -14,6 +14,7 @@ def get_password_strength(password, blacklist):
 
     if blacklist and is_in_blacklist(blacklist, password):
         return in_blacklist_score
+        
     return sum([
         is_safe_length(password)*length_score,
         has_numbers(password)*numbers_score,
@@ -46,9 +47,9 @@ def get_blacklist(blacklist_url):
     try:
         stream = request.urlopen(blacklist_url)
         blacklist_content = stream.read().decode("utf-8")
+        return blacklist_content.strip().splitlines()
     except ValueError:
         return None
-    return blacklist_content.strip().splitlines()
 
 
 def is_in_blacklist(blacklist, password):
@@ -81,10 +82,12 @@ if __name__ == "__main__":
         sys.exit("password expected")
 
     blacklist_url = args.blacklist_url
-    blacklist = None
+    blacklist = []
     if blacklist_url:
-        blacklist = get_blacklist(blacklist_url)
-        if not blacklist:
-            sys.exit("bad blacklist url specified")
+        blacklist += get_blacklist(blacklist_url)
+    
+    if not blacklist:
+        print("blacklist is empty, skipping list check")
+        
     password_strength = get_password_strength(password, blacklist)
-    print("password strength: {0}".format(str(password_strength)))
+    print("password strength: {0}".format(password_strength))

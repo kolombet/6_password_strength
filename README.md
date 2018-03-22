@@ -19,9 +19,10 @@ https://raw.githubusercontent.com/danielmiessler/SecLists/master/Passwords/Commo
 
 # Quickstart
 
-When you run this script, you will be promted to enter password to check and blacklist url. If blacklist url is empty string, program will skip blacklist check.
+When you run this script, you will be promted to enter password to check. 
 
-You specify password with parameter -p or --password and you can specify blacklist url with parameter -b or --blacklist
+You can specify blacklist url with parameter -b or --blacklist
+If blacklist url is empty string, program will skip blacklist check.
 
 Example of script launch on Linux, Python 3.5:
 
